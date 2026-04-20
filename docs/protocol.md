@@ -130,9 +130,25 @@ DFU scope is strictly nRF firmware update; host application/runtime update is ou
 - nRF keeps minimal per-channel replay state (last response frame + sequence).
 - Backoff and retry limits are host policy controls.
 
-## 8. Connection and Audio Defaults
+## 8. Timing Requirements
+
+- Power-on / reset timing:
+  - Host asserts `RESET` low for at least **5 ms**, then releases.
+  - nRF firmware completes link-ready signaling within **100 ms** after reset release.
+  - Host should wait at least **2 ms** after reset release before first non-empty TL transaction.
+- `PING`/`PONG` keepalive:
+  - Host sends `NRFP_OP_CTRL_PING` at default **1 s** cadence when link is idle.
+  - Peer shall answer with `NRFP_OP_CTRL_PONG` within **50 ms** nominal budget.
+- ACK timeout/retry baseline:
+  - Initial ACK wait window: **20 ms**.
+  - Exponential backoff factor: **x2** per retry (20/40/80 ms).
+  - Default retry cap: **3** attempts before declaring `NRFP_STATUS_TIMEOUT`.
+- SPI transaction pacing:
+  - When `HOST_IRQ` is asserted, host should service at next scheduling slot and target sub-**2 ms** service latency under nominal load.
+  - Empty poll transactions are allowed for drain/flush and keep timing monotonic across channels.
+
+## 9. Connection and Audio Defaults
 
 - Advertised max logical BLE connection budget: **20**.
 - Audio default payload format over SPI: **LC3_RAW**.
 - No TL encryption in v1; upper layers provide confidentiality/integrity where required.
-
