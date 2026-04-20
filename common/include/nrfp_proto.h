@@ -17,6 +17,7 @@
 
 #define NRFP_FLAG_CHANNEL_MASK 0x0Fu
 #define NRFP_FLAG_ACK_REQ 0x10u
+/* Keep REQ_ACK alias for updated protocol wording while preserving ACK_REQ ABI. */
 #define NRFP_FLAG_REQ_ACK NRFP_FLAG_ACK_REQ
 #define NRFP_FLAG_IS_ACK 0x20u
 #define NRFP_FLAG_RETRY 0x40u

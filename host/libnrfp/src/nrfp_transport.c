@@ -104,10 +104,11 @@ if (frame->hdr.version != NRFP_TL_VERSION || frame->hdr.sof != NRFP_TL_SOF)
 return -EINVAL;
 if (nrfp_channel_from_flags(frame->hdr.flags) >= NRFP_CHANNEL_COUNT)
 return -EINVAL;
-if (nrfp_channel_from_flags(frame->hdr.flags) == NRFP_CH_AUDIO &&
-    frame->hdr.opcode == NRFP_OP_AUDIO_FMT && payload_len > 0u &&
-    frame->payload && frame->payload[0] == NRFP_AUDIO_FMT_PCM_LE16)
-return -EOPNOTSUPP;
+	if (nrfp_channel_from_flags(frame->hdr.flags) == NRFP_CH_AUDIO &&
+	    frame->hdr.opcode == NRFP_OP_AUDIO_FMT && payload_len > 0u &&
+	    /* Host-side transport bandwidth policy: reject PCM and keep LC3-only on SPI. */
+	    frame->payload && frame->payload[0] == NRFP_AUDIO_FMT_PCM_LE16)
+		return -EOPNOTSUPP;
 return nrfp_encode_internal(out, out_len, &frame->hdr, frame->payload, payload_len, written);
 }
 
@@ -138,17 +139,18 @@ if (in_len < total)
 return -ENODATA;
 got_crc = (uint16_t)in[total_wo_crc] | ((uint16_t)in[total_wo_crc + 1u] << 8);
 expected_crc = nrfp_crc16(in, total_wo_crc);
-if (got_crc != expected_crc) {
-if (health) {
-if (health->crc_error_streak < NRFP_CRC_ERROR_RESET_THRESHOLD)
-health->crc_error_streak++;
-if (health->crc_error_streak >= NRFP_CRC_ERROR_RESET_THRESHOLD)
-health->crc_error_streak = 0;
-}
-return -EBADMSG;
-}
-if (health)
-health->crc_error_streak = 0;
+	if (got_crc != expected_crc) {
+		if (health) {
+			if (health->crc_error_streak < NRFP_CRC_ERROR_RESET_THRESHOLD)
+				health->crc_error_streak++;
+			if (health->crc_error_streak >= NRFP_CRC_ERROR_RESET_THRESHOLD)
+				health->reset_requested = true;
+		}
+		return -EBADMSG;
+	}
+	if (health) {
+		health->crc_error_streak = 0;
+	}
 frame->payload = payload_len ? (in + sizeof(struct nrfp_tl_header)) : NULL;
 *consumed_len = (uint16_t)total;
 return 0;

@@ -4,16 +4,6 @@
 
 #include "nrfp.h"
 
-static bool nrfp_crc_error_maybe_reset(struct nrfp_dev *ndev)
-{
-	ndev->crc_error_streak++;
-	if (ndev->crc_error_streak < 8u)
-		return false;
-	ndev->crc_error_streak = 0;
-	dev_warn(&ndev->spi->dev, "8 consecutive CRC errors, request nRF reset\n");
-	return true;
-}
-
 static void nrfp_crc_error_clear(struct nrfp_dev *ndev)
 {
 	ndev->crc_error_streak = 0;
@@ -47,7 +37,6 @@ static int nrfp_probe(struct spi_device *spi)
 		goto err_audio;
 
 	dev_info(&spi->dev, "nrfp proxy skeleton probed\n");
-	(void)nrfp_crc_error_maybe_reset;
 	return 0;
 
 err_audio:

@@ -15,8 +15,10 @@ uint8_t flags = frames[i].hdr.flags;
 size_t payload_len = nrfp_u16_from_le(frames[i].hdr.payload_len_le);
 int rc;
 
-if (payload_len == 0u && (flags & (NRFP_FW_FLAG_REQ_ACK | NRFP_FLAG_IS_ACK | NRFP_FW_FLAG_IS_NAK)) == 0u)
-continue;
+		/* Keep idle-frame filtering consistent with host aggregator to save SPI bandwidth. */
+		if (payload_len == 0u &&
+		    (flags & (NRFP_FW_FLAG_REQ_ACK | NRFP_FW_FLAG_IS_ACK | NRFP_FW_FLAG_IS_NAK)) == 0u)
+			continue;
 rc = nrfp_frame_encode(out + used, out_len - used, &frames[i], &one);
 if (rc)
 return rc;

@@ -38,11 +38,12 @@ size_t aggregated;
 size_t packed;
 struct nrfp_tx_queue queue;
 size_t scheduled;
-struct nrfp_frame ack;
-uint8_t rx_wire[NRFP_FRAME_WIRE_MAX];
-size_t rx_wire_len;
-int rc;
-unsigned int i;
+	struct nrfp_frame ack;
+	uint8_t rx_wire[NRFP_FRAME_WIRE_MAX];
+	size_t rx_wire_len;
+	struct nrfp_rx_health health = { 0 };
+	int rc;
+	unsigned int i;
 
 assert(nrfp_crc16(crc_vec, sizeof(crc_vec) - 1u) == 0x29B1u);
 
@@ -88,8 +89,15 @@ assert((wire[2] & NRFP_FLAG_RETRY) != 0u);
 ack = make_frame(NRFP_CH_CTRL, NRFP_OP_CTRL_PONG, NULL, 0u, NRFP_FLAG_IS_ACK);
 ack.hdr.ack_seq = 0u;
 assert(nrfp_frame_encode(rx_wire, sizeof(rx_wire), &ack, &rx_wire_len) == 0);
-assert(nrfp_frame_decode(rx_wire, rx_wire_len, &decoded, &consumed, NULL) == 0);
-assert(nrfp_retry_scheduler(&queue, NRFP_RETRY_TIMEOUT_MS + 2u, &decoded, wire, sizeof(wire), &scheduled) == -EAGAIN);
+	assert(nrfp_frame_decode(rx_wire, rx_wire_len, &decoded, &consumed, NULL) == 0);
+	assert(nrfp_retry_scheduler(&queue, NRFP_RETRY_TIMEOUT_MS + 2u, &decoded, wire, sizeof(wire), &scheduled) == -EAGAIN);
 
-return 0;
+	frame = make_frame(NRFP_CH_CTRL, NRFP_OP_CTRL_PING, payload, 2u, 0u);
+	assert(nrfp_frame_encode(rx_wire, sizeof(rx_wire), &frame, &rx_wire_len) == 0);
+	rx_wire[rx_wire_len - 1u] ^= 0xFFu;
+	for (i = 0; i < NRFP_CRC_ERROR_RESET_THRESHOLD; i++)
+		assert(nrfp_frame_decode(rx_wire, rx_wire_len, &decoded, &consumed, &health) == -EBADMSG);
+	assert(health.reset_requested);
+
+	return 0;
 }

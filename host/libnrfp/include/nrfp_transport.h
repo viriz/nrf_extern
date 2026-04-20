@@ -16,6 +16,8 @@
 #define NRFP_TX_QUEUE_DEPTH 16u
 #define NRFP_FRAGMENT_META_SIZE 4u
 #define NRFP_FRAME_WIRE_MAX (sizeof(struct nrfp_tl_header) + NRFP_TL_MAX_PAYLOAD + sizeof(uint16_t))
+/* SPI bandwidth policy: audio transport defaults to LC3 and rejects PCM format frames in encode path. */
+/* nrfp_tx_queue_* APIs are not thread-safe; callers must serialize access per queue instance. */
 
 struct nrfp_frame {
 struct nrfp_tl_header hdr;
@@ -29,7 +31,8 @@ uint8_t total;
 };
 
 struct nrfp_rx_health {
-uint8_t crc_error_streak;
+	uint8_t crc_error_streak;
+	bool reset_requested;
 };
 
 struct nrfp_tx_entry {

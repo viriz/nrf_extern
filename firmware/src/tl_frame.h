@@ -8,6 +8,7 @@
 #include "../../common/include/nrfp_proto.h"
 
 #define NRFP_FW_FLAG_REQ_ACK NRFP_FLAG_ACK_REQ
+#define NRFP_FW_FLAG_IS_ACK NRFP_FLAG_IS_ACK
 #define NRFP_FW_FLAG_IS_NAK 0x80u
 #define NRFP_FW_RETRY_TIMEOUT_MS 50u
 #define NRFP_FW_RETRY_MAX_ATTEMPTS 3u
