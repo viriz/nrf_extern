@@ -134,7 +134,8 @@ DFU scope is strictly nRF firmware update; host application/runtime update is ou
 
 - Power-on / reset timing:
   - Host asserts `RESET` low for at least **5 ms**, then releases.
-  - nRF firmware completes link-ready signaling target within **100 ms** after reset release.
+  - nRF firmware completes link-ready signaling within **100 ms** after reset release.
+  - Host should wait at least **2 ms** after reset release before first non-empty TL transaction.
 - `PING`/`PONG` keepalive:
   - Host sends `NRFP_OP_CTRL_PING` at default **1 s** cadence when link is idle.
   - Peer shall answer with `NRFP_OP_CTRL_PONG` within **50 ms** nominal budget.
