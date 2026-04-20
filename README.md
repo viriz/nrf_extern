@@ -10,3 +10,17 @@ Project scaffold now includes:
 - shared transport definitions in `common/include/nrfp_proto.h`
 - firmware skeleton under `firmware/` (Zephyr/NCS)
 - host skeleton under `host/` (kernel module + userspace lib + daemon + tools)
+
+## Architecture
+
+- nRF endpoint (Zephyr/NCS) is a passive peripheral proxy over SPI slave + sideband GPIO.
+- Linux host owns policy/retry/timing orchestration through kernel and user-space layers.
+- Shared on-wire protocol contract is centralized in `common/include/nrfp_proto.h`.
+
+## Build Framework
+
+- Host userspace scaffold:
+  - `cmake -S host -B build-host`
+  - `cmake --build build-host`
+- Firmware scaffold:
+  - West manifest and Zephyr app root are under `firmware/` (`west.yml`, `prj.conf`, `src/`).
