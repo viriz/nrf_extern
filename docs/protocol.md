@@ -26,10 +26,10 @@ Frame bytes:
 - `VER`: transport version (`0x01`).
 - `FLG`:
   - bits `[3:0]`: channel ID (`0..15`),
-  - bit `4`: `ACK_REQ`,
+  - bit `4`: `REQ_ACK`,
   - bit `5`: `IS_ACK`,
   - bit `6`: `RETRY`,
-  - bit `7`: reserved (must be 0 in v1).
+  - bit `7`: `IS_NAK`.
 - `SEQ`: sender sequence number.
 - `ACK_SEQ`: last sequence from peer being acknowledged.
 - `OPCODE`: command/event within channel namespace.
@@ -124,11 +124,21 @@ DFU scope is strictly nRF firmware update; host application/runtime update is ou
 
 ## 7. Reliability Strategy
 
-- `ACK_REQ` means sender expects confirmation at TL level.
+- `REQ_ACK` means sender expects confirmation at TL level.
 - `IS_ACK` indicates pure acknowledgment frame (may carry zero payload).
+- `IS_NAK` indicates receiver rejected frame and requests retransmission for `ACK_SEQ`.
 - Retries are timer-driven primarily by host daemon.
 - nRF keeps minimal per-channel replay state (last response frame + sequence).
-- Backoff and retry limits are host policy controls.
+- Baseline retry policy is fixed to `50 ms` timeout with up to `3` attempts.
+- Receiver tracks consecutive CRC failures. `8` consecutive CRC mismatches trigger nRF reset request path.
+
+## 7.1 Batch Aggregation and Fragmentation
+
+- A single SPI transaction can carry multiple complete TL frames packed back-to-back.
+- Idle/fill frames (zero payload, no ACK/NAK semantics) should be dropped before SPI scheduling.
+- Payloads larger than effective MTU are fragmented at TL payload level. Each fragment payload starts with a 4-byte metadata prefix:
+  - `frag_idx (1)`, `frag_total (1)`, `origin_len_le16 (2)`.
+- Fragments preserve channel/opcode/seq semantic continuity and are reassembled in-order by receiver.
 
 ## 8. Timing Requirements
 
@@ -140,8 +150,7 @@ DFU scope is strictly nRF firmware update; host application/runtime update is ou
   - Host sends `NRFP_OP_CTRL_PING` at default **1 s** cadence when link is idle.
   - Peer shall answer with `NRFP_OP_CTRL_PONG` within **50 ms** nominal budget.
 - ACK timeout/retry baseline:
-  - Initial ACK wait window: **20 ms**.
-  - Exponential backoff factor: **x2** per retry (20/40/80 ms).
+  - ACK wait window: **50 ms**.
   - Default retry cap: **3** attempts before declaring `NRFP_STATUS_TIMEOUT`.
 - SPI transaction pacing:
   - When `HOST_IRQ` is asserted, host should service at next scheduling slot and target sub-**2 ms** service latency under nominal load.

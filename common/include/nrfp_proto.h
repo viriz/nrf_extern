@@ -17,8 +17,11 @@
 
 #define NRFP_FLAG_CHANNEL_MASK 0x0Fu
 #define NRFP_FLAG_ACK_REQ 0x10u
+/* Keep REQ_ACK alias for updated protocol wording while preserving ACK_REQ ABI. */
+#define NRFP_FLAG_REQ_ACK NRFP_FLAG_ACK_REQ
 #define NRFP_FLAG_IS_ACK 0x20u
 #define NRFP_FLAG_RETRY 0x40u
+#define NRFP_FLAG_IS_NAK 0x80u
 
 #if defined(__GNUC__) || defined(__clang__)
 #define NRFP_PACKED __attribute__((packed))
@@ -81,6 +84,11 @@ enum nrfp_opcode {
 	NRFP_OP_DFU_CHUNK = 0x61,
 	NRFP_OP_DFU_END = 0x62,
 	NRFP_OP_DFU_STATUS = 0x63,
+};
+
+enum nrfp_audio_fmt {
+	NRFP_AUDIO_FMT_LC3_RAW = 0x00,
+	NRFP_AUDIO_FMT_PCM_LE16 = 0x01,
 };
 
 struct nrfp_tl_header {

@@ -23,6 +23,7 @@ Constraints reflected in this scaffold:
 
 - **SPIS link endpoint**: receives/transmits TL frames over SPI slave.
 - **TL codec**: validates SOF/version/CRC, parses channel/opcode/status/sequence.
+- **TL batch/fragment layer**: aggregates multiple frames per SPI transaction and auto-fragments oversized payloads.
 - **Service bridges**:
   - BLE/HCI bridge (future extension via IPC child image).
   - GPIO / key forwarding hooks.
@@ -58,7 +59,7 @@ All service payload semantics are defined in `docs/protocol.md`.
 ## 4. Reliability Model
 
 - Stop-and-wait per channel with sequence numbers.
-- ACK/NACK via status + ack sequence fields.
+- ACK/NACK via `REQ_ACK`/`IS_ACK`/`IS_NAK` + `SEQ/ACK_SEQ` fields.
 - Retry ownership is host-first; nRF may retransmit most recent response when `RETRY` flag is seen.
 - CRC16-CCITT-FALSE protects header + payload.
 
@@ -70,4 +71,3 @@ All service payload semantics are defined in `docs/protocol.md`.
 - `host/libnrfp/`: user-space helper library.
 - `host/daemon/`: long-running host control process scaffold.
 - `host/tools/`: diagnostics tooling scaffold.
-

@@ -4,6 +4,11 @@
 
 #include "nrfp.h"
 
+static void nrfp_crc_error_clear(struct nrfp_dev *ndev)
+{
+	ndev->crc_error_streak = 0;
+}
+
 static int nrfp_probe(struct spi_device *spi)
 {
 	struct nrfp_dev *ndev;
@@ -14,6 +19,7 @@ static int nrfp_probe(struct spi_device *spi)
 		return -ENOMEM;
 
 	ndev->spi = spi;
+	nrfp_crc_error_clear(ndev);
 	mutex_init(&ndev->lock);
 	spi_set_drvdata(spi, ndev);
 
@@ -71,4 +77,3 @@ module_spi_driver(nrfp_driver);
 MODULE_LICENSE("Apache-2.0");
 MODULE_AUTHOR("viriz");
 MODULE_DESCRIPTION("nRF5340 peripheral proxy kernel skeleton");
-
