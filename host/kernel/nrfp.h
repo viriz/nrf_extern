@@ -5,11 +5,11 @@
 #include <linux/mutex.h>
 #include <linux/spi/spi.h>
 
-#define NRFP_CH_COUNT 8
+#include "../../common/include/nrfp_proto.h"
 
 struct nrfp_dev {
 	struct spi_device *spi;
-	struct miscdevice chardev[NRFP_CH_COUNT];
+	struct miscdevice chardev[NRFP_CHANNEL_COUNT];
 	struct mutex lock;
 };
 
@@ -23,4 +23,3 @@ int nrfp_nfc_init(struct nrfp_dev *ndev);
 void nrfp_nfc_exit(struct nrfp_dev *ndev);
 
 #endif /* NRFP_KERNEL_H */
-

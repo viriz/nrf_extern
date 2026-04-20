@@ -8,17 +8,17 @@ struct nrfp_channel_state {
 	uint8_t last_ack_seq;
 };
 
-static struct nrfp_channel_state channel_state[8];
+static struct nrfp_channel_state channel_state[NRFP_CHANNEL_COUNT];
 
 void nrfp_tl_transport_reset(void)
 {
 	memset(channel_state, 0, sizeof(channel_state));
 }
 
-uint8_t nrfp_tl_transport_next_seq(uint8_t channel)
+int nrfp_tl_transport_next_seq(uint8_t channel)
 {
-	if (channel >= 8) {
-		return 0;
+	if (channel >= NRFP_CHANNEL_COUNT) {
+		return -1;
 	}
 	return channel_state[channel].next_tx_seq++;
 }
@@ -27,7 +27,7 @@ int nrfp_tl_transport_accept_seq(uint8_t channel, uint8_t seq, uint8_t retry)
 {
 	struct nrfp_channel_state *s;
 
-	if (channel >= 8) {
+	if (channel >= NRFP_CHANNEL_COUNT) {
 		return -1;
 	}
 
@@ -44,4 +44,3 @@ int nrfp_tl_transport_accept_seq(uint8_t channel, uint8_t seq, uint8_t retry)
 
 	return -2;
 }
-

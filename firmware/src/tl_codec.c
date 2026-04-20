@@ -17,9 +17,12 @@ int nrfp_tl_encode(uint8_t *out, size_t out_len, const struct nrfp_tl_frame *fra
 	if (payload_len > NRFP_TL_MAX_PAYLOAD || out_len < total_wo_crc + sizeof(uint16_t)) {
 		return -2;
 	}
+	if (payload_len && !frame->payload) {
+		return -3;
+	}
 
 	memcpy(out, &frame->hdr, sizeof(frame->hdr));
-	if (payload_len && frame->payload) {
+	if (payload_len) {
 		memcpy(out + sizeof(frame->hdr), frame->payload, payload_len);
 	}
 	crc = nrfp_crc16_ccitt_false(out, total_wo_crc);
@@ -69,4 +72,3 @@ int nrfp_tl_decode(const uint8_t *in, size_t in_len, struct nrfp_tl_frame *frame
 
 	return 0;
 }
-

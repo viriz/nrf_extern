@@ -13,6 +13,7 @@
 #define NRFP_TL_VERSION 0x01u
 #define NRFP_TL_MAX_PAYLOAD 512u
 #define NRFP_MAX_CONNECTIONS 20u
+#define NRFP_CHANNEL_COUNT 8u
 
 #define NRFP_FLAG_CHANNEL_MASK 0x0Fu
 #define NRFP_FLAG_ACK_REQ 0x10u
@@ -156,4 +157,3 @@ static inline uint16_t nrfp_u16_to_le(uint16_t value)
 }
 
 #endif /* NRFP_PROTO_H */
-

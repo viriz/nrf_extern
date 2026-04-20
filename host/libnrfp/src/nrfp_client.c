@@ -27,6 +27,5 @@ int nrfp_client_request(int fd, uint8_t opcode, const uint8_t *payload, size_t l
 
 	if (fd < 0)
 		return -EBADF;
-	return 0;
+	return -ENOTSUP;
 }
-
