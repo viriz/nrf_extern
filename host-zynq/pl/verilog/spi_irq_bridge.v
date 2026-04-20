@@ -1,13 +1,13 @@
 /*
- * 最小可综合 IRQ 桥接模块：
- * 1) 对 nRF HOST_IRQ(低有效)进行双触发同步
- * 2) 产生 pending 状态并可由 PS clear
- * 3) 可选脉宽拉伸，便于 PS/PL 中断捕获
+ * Minimal synthesizable IRQ bridge:
+ * 1) Synchronize nRF HOST_IRQ (active-low) with two flip-flops.
+ * 2) Latch a pending flag that PS can clear.
+ * 3) Optionally stretch pulse width for robust PS/PL interrupt capture.
  *
- * 扩展点：将 irq_pending/pulse_active/stretch_cnt 映射到 AXI-Lite 状态寄存器。
+ * Extension point: map irq_pending/pulse_active/stretch_cnt to AXI-Lite registers.
  */
 module spi_irq_bridge #(
-    parameter integer STRETCH_CYCLES = 32
+    parameter [15:0] STRETCH_CYCLES = 16'd32
 ) (
     input  wire clk,
     input  wire rst_n,
@@ -45,7 +45,7 @@ always @(posedge clk or negedge rst_n) begin
         if (irq_falling) begin
             irq_pending  <= 1'b1;
             pulse_active <= 1'b1;
-            stretch_cnt  <= STRETCH_CYCLES[15:0];
+            stretch_cnt  <= STRETCH_CYCLES;
         end else if (stretch_cnt != 16'd0) begin
             stretch_cnt <= stretch_cnt - 16'd1;
         end else begin

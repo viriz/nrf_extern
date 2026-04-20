@@ -1,8 +1,16 @@
 #ifndef NRFP_ZYNQ_IOCTL_H
 #define NRFP_ZYNQ_IOCTL_H
 
+#ifdef __KERNEL__
 #include <linux/ioctl.h>
 #include <linux/types.h>
+#else
+#include <stdint.h>
+#include <sys/ioctl.h>
+typedef uint8_t __u8;
+typedef uint16_t __u16;
+typedef uint64_t __u64;
+#endif
 
 #include "../../common/include/nrfp_proto.h"
 

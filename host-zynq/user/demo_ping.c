@@ -16,10 +16,10 @@ struct nrfp_zynq_frame_req req;
 const char payload[] = "echo-from-zynq-user";
 
 memset(&req, 0, sizeof(req));
-req.channel = NRFP_CH_CTRL;
-req.opcode = NRFP_OP_CTRL_PING;
-req.flags = NRFP_FLAG_ACK_REQ;
-req.payload_len = (unsigned short)(sizeof(payload) - 1);
+	req.channel = NRFP_CH_CTRL;
+	req.opcode = NRFP_OP_CTRL_PING;
+	req.flags = NRFP_FLAG_ACK_REQ;
+	req.payload_len = sizeof(payload) - 1;
 memcpy(req.payload, payload, req.payload_len);
 
 return ioctl(fd, NRFP_ZYNQ_IOC_SEND_FRAME, &req);

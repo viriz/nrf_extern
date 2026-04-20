@@ -53,7 +53,7 @@ payload_len = req->payload_len;
 if (payload_len > NRFP_TL_MAX_PAYLOAD)
 return -EMSGSIZE;
 
-/* TODO: 扩展点：在此处加入 TL 聚合/分片/重传调度。 */
+	/* TODO: extension point for TL aggregation/fragmentation/retry scheduler. */
 frame_len = sizeof(hdr) + payload_len + sizeof(crc);
 frame = kzalloc(frame_len, GFP_KERNEL);
 if (!frame)
@@ -120,7 +120,7 @@ struct nrfp_zynq_event_msg evt = {
 .timestamp_ns = ktime_get_ns(),
 };
 
-/* TODO: 扩展点：IRQ 到来后在此触发 SPI 读流程并解析 TL 帧。 */
+	/* TODO: extension point for SPI read + TL frame parse on host IRQ. */
 ndev->stats.irq_count++;
 nrfp_zynq_push_event(ndev, &evt);
 return IRQ_HANDLED;
@@ -219,7 +219,7 @@ static const struct file_operations nrfp_zynq_fops = {
 .write = nrfp_zynq_write,
 .poll = nrfp_zynq_poll,
 .unlocked_ioctl = nrfp_zynq_ioctl,
-	.llseek = noop_llseek,
+.llseek = noop_llseek,
 };
 
 static int nrfp_zynq_probe(struct spi_device *spi)

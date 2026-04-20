@@ -18,7 +18,7 @@ Zynq-7020 主机端参考工程（PS Linux + 可选 PL 桥接）用于对接 nRF
 ### 1) 内核模块（out-of-tree）
 
 ```bash
-cd /home/runner/work/nrf_extern/nrf_extern/host-zynq/kernel
+cd host-zynq/kernel
 make
 # 等价于：make -C /lib/modules/$(uname -r)/build M=$PWD modules
 ```
@@ -26,7 +26,7 @@ make
 ### 2) 用户态 demo
 
 ```bash
-cd /home/runner/work/nrf_extern/nrf_extern/host-zynq/user
+cd host-zynq/user
 cmake -S . -B build
 cmake --build build
 ```
@@ -35,13 +35,13 @@ cmake --build build
 
 ```bash
 # 加载模块
-sudo insmod /home/runner/work/nrf_extern/nrf_extern/host-zynq/kernel/nrfp_zynq_host.ko
+sudo insmod host-zynq/kernel/nrfp_zynq_host.ko
 
 # 查看节点（默认 miscdev）
 ls -l /dev/nrfp-zynq0
 
 # 跑最小 demo
-/home/runner/work/nrf_extern/nrf_extern/host-zynq/user/build/nrfp_zynq_ping /dev/nrfp-zynq0
+host-zynq/user/build/nrfp_zynq_ping /dev/nrfp-zynq0
 
 # 内核日志
 sudo dmesg | grep -i nrfp-zynq

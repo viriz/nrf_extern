@@ -40,9 +40,9 @@ initial begin
 
     #40;
     if (!irq_pending)
-        $fatal("irq_pending should be asserted after falling edge");
+        $fatal(1, "irq_pending should be asserted after falling edge, got irq_pending=%0b", irq_pending);
     if (!ps_irq)
-        $fatal("ps_irq should be asserted while pending");
+        $fatal(1, "ps_irq should be asserted while pending, got ps_irq=%0b", ps_irq);
 
     clear_pending = 1'b1;
     #10;
@@ -50,7 +50,7 @@ initial begin
 
     #40;
     if (irq_pending)
-        $fatal("irq_pending should be cleared");
+        $fatal(1, "irq_pending should be cleared, got irq_pending=%0b", irq_pending);
 
     #80;
     $display("spi_irq_bridge_tb passed");

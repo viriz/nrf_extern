@@ -1,33 +1,8 @@
 /dts-v1/;
 /plugin/;
 
-#include <dt-bindings/gpio/gpio.h>
-#include <dt-bindings/interrupt-controller/irq.h>
-
-/ {
-fragment@0 {
-target-path = "/";
-__overlay__ {
-/* 供 overlay 流程引用，核心节点见 zynq-nrfp-overlay.dtsi */
-};
-};
-
-fragment@1 {
-target = <&spi0>;
-__overlay__ {
-status = "okay";
-num-cs = <1>;
-
-nrfp@0 {
-compatible = "viriz,nrf5340-proxy-zynq";
-reg = <0>;
-spi-max-frequency = <12000000>;
-host-irq-gpios = <&gpio0 54 GPIO_ACTIVE_LOW>;
-interrupt-parent = <&gpio0>;
-interrupts = <54 IRQ_TYPE_EDGE_RISING>;
-reset-gpios = <&gpio0 55 GPIO_ACTIVE_LOW>;
-boot-gpios = <&gpio0 56 GPIO_ACTIVE_HIGH>;
-};
-};
-};
-};
+/*
+ * Runtime overlay example.
+ * Reuse the same SPI/GPIO/IRQ node payload from zynq-nrfp-overlay.dtsi.
+ */
+#include "zynq-nrfp-overlay.dtsi"
