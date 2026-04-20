@@ -8,14 +8,19 @@
 flowchart LR
     subgraph Zynq-7020
       PS[PS7\nSPI0/GPIO/IRQ]
-      PL[PL\nspi_irq_bridge]
+      PL0[PL\nspi_irq_bridge]
+      PL1[PL\nspi_rx_tx_fifo]
+      PL2[PL\ncrc16_ccitt_pipe]
     end
 
     NRF[nRF5340\nSPI Slave + HOST_IRQ + RESET + BOOT]
 
-    PS -- SPI0_SCLK/MOSI/MISO/CS --> NRF
-    NRF -- HOST_IRQ --> PL
-    PL -- IRQ_FABRIC --> PS
+    PS -- SPI0_SCLK/MOSI/MISO/CS --> PL1
+    PL1 -- SPI stream --> NRF
+    PL1 -- frame stream --> PL2
+    PL2 -- crc/status --> PS
+    NRF -- HOST_IRQ --> PL0
+    PL0 -- IRQ_FABRIC --> PS
     PS -- RESET_N --> NRF
     PS -- BOOT_MODE --> NRF
 ```
@@ -41,4 +46,5 @@ flowchart LR
 1. PS7 使能 SPI0 与 EMIO GPIO（或 MIO，视板卡资源）。
 2. 将 `spi_irq_bridge` 接入 IRQ_F2P。
 3. 预留状态接口扩展点：`irq_pending`、`pulse_active` 可后续挂 AXI-Lite。
-4. Linux 设备树中将 SPI 从设备 compatible 设为 `viriz,nrf5340-proxy-zynq`。
+4. 新增模块 `spi_rx_tx_fifo` 与 `crc16_ccitt_pipe` 的寄存器映射与联调建议见 `pl_modules_fifo_crc.md`。
+5. Linux 设备树中将 SPI 从设备 compatible 设为 `viriz,nrf5340-proxy-zynq`。

@@ -77,6 +77,11 @@ printf("stats: tx_frames=%llu tx_bytes=%llu rx_events=%llu irq=%llu dropped=%llu
        (unsigned long long)stats.rx_events,
        (unsigned long long)stats.irq_count,
        (unsigned long long)stats.rx_dropped);
+printf("       rx_frames=%llu crc_errors=%llu pl_rx_overflow=%llu pl_tx_overflow=%llu\n",
+       (unsigned long long)stats.rx_frames,
+       (unsigned long long)stats.crc_errors,
+       (unsigned long long)stats.pl_rx_overflow,
+       (unsigned long long)stats.pl_tx_overflow);
 }
 
 close(fd);
