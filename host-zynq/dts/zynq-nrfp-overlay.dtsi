@@ -1,0 +1,26 @@
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/interrupt-controller/irq.h>
+
+/*
+ * 示例 dtsi：Zynq PS SPI + GPIO + IRQ 连接 nRF5340 代理。
+ * 可作为板级 DTS include，根据实际 MIO/EMIO 编号修改 GPIO 索引。
+ */
+&spi0 {
+	status = "okay";
+	num-cs = <1>;
+
+	nrfp@0 {
+		compatible = "viriz,nrf5340-proxy-zynq";
+		reg = <0>;
+		spi-max-frequency = <12000000>;
+
+		/* HOST_IRQ from nRF -> PS/PL IRQ path */
+		host-irq-gpios = <&gpio0 54 GPIO_ACTIVE_LOW>;
+		interrupt-parent = <&gpio0>;
+		interrupts = <54 IRQ_TYPE_EDGE_RISING>;
+
+		/* Sideband control */
+		reset-gpios = <&gpio0 55 GPIO_ACTIVE_LOW>;
+		boot-gpios = <&gpio0 56 GPIO_ACTIVE_HIGH>;
+	};
+};
