@@ -10,7 +10,7 @@ Zynq-7020 主机端参考工程（PS Linux + 可选 PL 桥接）用于对接 nRF
 - `user/`：最小用户态 demo（ping/echo 类请求、事件接收、统计打印）
 - `dts/`：Zynq SPI + GPIO + IRQ 的 dtsi/overlay 示例
 - `docs/`：PS/PL/nRF 连线说明
-- `pl/verilog/`：可综合最小 PL 模块与 testbench
+- `pl/verilog/`：可综合最小 PL 模块与 testbench（含 FIFO/CRC 卸载模块）
 - `include/`：内核/用户态共享 UAPI 结构体与 ioctl 定义
 
 ## 构建
@@ -29,6 +29,22 @@ make
 cd host-zynq/user
 cmake -S . -B build
 cmake --build build
+```
+
+### 3) PL Verilog 模块仿真（FIFO/CRC）
+
+> 需要本地安装 `iverilog` + `vvp`（CI 环境未默认安装）。
+
+```bash
+cd host-zynq/pl/verilog
+
+# SPI RX/TX FIFO bridge testbench
+iverilog -g2012 -o spi_rx_tx_fifo_tb.out spi_rx_tx_fifo.v spi_rx_tx_fifo_tb.v
+vvp spi_rx_tx_fifo_tb.out
+
+# CRC16-CCITT-FALSE pipeline testbench
+iverilog -g2012 -o crc16_ccitt_pipe_tb.out crc16_ccitt_pipe.v crc16_ccitt_pipe_tb.v
+vvp crc16_ccitt_pipe_tb.out
 ```
 
 ## 加载与调试
@@ -63,5 +79,6 @@ sudo dmesg | grep -i nrfp-zynq
 > 边界建议：**业务策略、重传策略决策、音频/NFC 业务逻辑留在 PS/Linux**；PL 聚焦“高频、规则固定、可流水线”的链路层任务。
 
 - 在 `kernel/nrfp_zynq_host.c` 的 TL 收发入口补齐聚合/分片/重传策略。
-- 将 `pl/verilog/spi_irq_bridge.v` 扩展为 AXI-Lite 状态寄存器，供 PS 侧中断与状态统一管理。
+- 将 `pl/verilog/spi_rx_tx_fifo.v` 与 `pl/verilog/crc16_ccitt_pipe.v` 接入 AXI-Lite/AXIS/DMA 数据路径，供 PS 侧统一管理。
 - 按 `docs/pl_connection.md` 将 HOST_IRQ/RESET/BOOT 与 SPI 走线接入 Vivado Block Design。
+- FIFO/CRC 模块寄存器与联调说明见 `docs/pl_modules_fifo_crc.md`。
