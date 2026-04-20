@@ -76,7 +76,7 @@ spi_rx_tx_fifo #(
 
 always #5 clk = ~clk;
 
-task reg_write;
+task write_reg;
     input [3:0] addr;
     input [31:0] data;
     begin
@@ -90,12 +90,12 @@ task reg_write;
 endtask
 
 task push_rx_byte;
-    input [7:0] b;
+    input [7:0] rx_byte;
     input last;
     begin
         @(posedge clk);
         while (!s_rx_ready) @(posedge clk);
-        s_rx_data <= b;
+        s_rx_data <= rx_byte;
         s_rx_last <= last;
         s_rx_valid <= 1'b1;
         @(posedge clk);
@@ -105,12 +105,12 @@ task push_rx_byte;
 endtask
 
 task push_tx_byte;
-    input [7:0] b;
+    input [7:0] tx_byte;
     input last;
     begin
         @(posedge clk);
         while (!s_tx_ready) @(posedge clk);
-        s_tx_data <= b;
+        s_tx_data <= tx_byte;
         s_tx_last <= last;
         s_tx_valid <= 1'b1;
         @(posedge clk);
@@ -151,8 +151,8 @@ initial begin
     rst_n = 1'b1;
 
     /* Configure IRQ enables and watermarks: rx=4, tx=2 */
-    reg_write(4'h0, 32'h0000_0003);
-    reg_write(4'h1, 32'h0002_0004);
+    write_reg(4'h0, 32'h0000_0003);
+    write_reg(4'h1, 32'h0002_0004);
 
     /* RX burst and watermark validation */
     for (i = 0; i < 6; i = i + 1)
@@ -182,7 +182,7 @@ initial begin
     m_rx_ready = 1'b0;
 
     /* Clear sticky watermark bits */
-    reg_write(4'h0, 32'h0000_0303);
+    write_reg(4'h0, 32'h0000_0303);
     @(posedge clk);
     if (irq)
         $fatal(1, "irq should deassert after sticky clear");

@@ -195,7 +195,7 @@ always @(posedge clk or negedge rst_n) begin
                     end
                 end
                 REG_WM_CFG: begin
-                    cfg_rx_wm <= reg_wdata[ADDR_WIDTH:0];
+                    cfg_rx_wm <= reg_wdata[0 +: (ADDR_WIDTH+1)];
                     cfg_tx_wm <= reg_wdata[16 +: (ADDR_WIDTH+1)];
                 end
                 default: ;

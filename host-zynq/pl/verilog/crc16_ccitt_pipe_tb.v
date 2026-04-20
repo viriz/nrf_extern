@@ -35,12 +35,12 @@ crc16_ccitt_pipe dut (
 always #5 clk = ~clk;
 
 task send_byte;
-    input [7:0] b;
+    input [7:0] data_byte;
     input is_sof;
     input is_eof;
     begin
         @(posedge clk);
-        data_in <= b;
+        data_in <= data_byte;
         sof <= is_sof;
         eof <= is_eof;
         valid <= 1'b1;
