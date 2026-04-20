@@ -1,0 +1,27 @@
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/interrupt-controller/irq.h>
+
+/*
+ * Example dtsi: Zynq PS SPI + GPIO + IRQ wiring for nRF5340 proxy.
+ * Can be included by board DTS and adjusted for board-specific MIO/EMIO IDs.
+ */
+&spi0 {
+	status = "okay";
+	num-cs = <1>;
+
+	nrfp@0 {
+		compatible = "viriz,nrf5340-proxy-zynq";
+		reg = <0>;
+		spi-max-frequency = <12000000>;
+
+		/* HOST_IRQ from nRF -> PS/PL IRQ path */
+		host-irq-gpios = <&gpio0 54 GPIO_ACTIVE_LOW>;
+		interrupt-parent = <&gpio0>;
+		/* PL irq bridge outputs active-high pulse to PS, so edge-rising here. */
+		interrupts = <54 IRQ_TYPE_EDGE_RISING>;
+
+		/* Sideband control */
+		reset-gpios = <&gpio0 55 GPIO_ACTIVE_LOW>;
+		boot-gpios = <&gpio0 56 GPIO_ACTIVE_HIGH>;
+	};
+};

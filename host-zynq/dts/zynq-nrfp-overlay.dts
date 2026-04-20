@@ -1,0 +1,8 @@
+/dts-v1/;
+/plugin/;
+
+/*
+ * Runtime overlay example.
+ * Reuse the same SPI/GPIO/IRQ node payload from zynq-nrfp-overlay.dtsi.
+ */
+#include "zynq-nrfp-overlay.dtsi"

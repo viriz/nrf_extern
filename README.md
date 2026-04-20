@@ -10,6 +10,7 @@ Project scaffold now includes:
 - shared transport definitions in `common/include/nrfp_proto.h`
 - firmware skeleton under `firmware/` (Zephyr/NCS)
 - host skeleton under `host/` (kernel module + userspace lib + daemon + tools)
+- Zynq-7020 host reference under `host-zynq/` (SPI+GPIO IRQ kernel skeleton, userspace demo, PL bridge sample)
 
 ## Architecture
 
