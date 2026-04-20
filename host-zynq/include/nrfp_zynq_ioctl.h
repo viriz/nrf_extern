@@ -43,9 +43,26 @@ __u64 tx_bytes;
 __u64 rx_events;
 __u64 irq_count;
 __u64 rx_dropped;
+/* PL-related counters (populated when PL registers are mapped) */
+__u64 rx_frames;       /* TL frames successfully received and CRC-checked */
+__u64 crc_errors;      /* frames rejected due to CRC mismatch (PL hw or software) */
+__u64 pl_rx_overflow;  /* RX FIFO overflow events accumulated from PL COUNTER reg */
+__u64 pl_tx_overflow;  /* TX FIFO overflow events accumulated from PL COUNTER reg */
+};
+
+/*
+ * Runtime PL configuration: watermark thresholds and CRC offload enable.
+ * Applied via NRFP_ZYNQ_IOC_PL_CFG; takes effect immediately.
+ */
+struct nrfp_zynq_pl_cfg {
+__u8 use_pl_crc; /* 1 = use PL hardware CRC result, 0 = software fallback */
+__u8 rx_wm;      /* RX FIFO watermark in bytes (0 = keep current) */
+__u8 tx_wm;      /* TX FIFO watermark in bytes (0 = keep current) */
+__u8 reserved;
 };
 
 #define NRFP_ZYNQ_IOC_SEND_FRAME _IOW(NRFP_ZYNQ_IOC_MAGIC, 0x01, struct nrfp_zynq_frame_req)
-#define NRFP_ZYNQ_IOC_GET_STATS _IOR(NRFP_ZYNQ_IOC_MAGIC, 0x02, struct nrfp_zynq_stats)
+#define NRFP_ZYNQ_IOC_GET_STATS  _IOR(NRFP_ZYNQ_IOC_MAGIC, 0x02, struct nrfp_zynq_stats)
+#define NRFP_ZYNQ_IOC_PL_CFG    _IOW(NRFP_ZYNQ_IOC_MAGIC, 0x03, struct nrfp_zynq_pl_cfg)
 
 #endif /* NRFP_ZYNQ_IOCTL_H */

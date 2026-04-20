@@ -23,5 +23,15 @@
 		/* Sideband control */
 		reset-gpios = <&gpio0 55 GPIO_ACTIVE_LOW>;
 		boot-gpios = <&gpio0 56 GPIO_ACTIVE_HIGH>;
+
+		/*
+		 * PL FIFO/CRC AXI-Lite register window synthesised in Vivado.
+		 * Format: <base-address size>.  Adjust to match your Vivado
+		 * address editor assignment for the spi_rx_tx_fifo +
+		 * crc16_ccitt_pipe AXI-Lite slave (example: 0x43C00000).
+		 * Remove or comment out this property to disable PL acceleration
+		 * and fall back to software CRC.
+		 */
+		pl-fifo-crc-reg = <0x43C00000 0x40>;
 	};
 };
