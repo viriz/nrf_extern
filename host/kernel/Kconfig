@@ -1,0 +1,6 @@
+config NRFP_PROXY
+	tristate "nRF5340 peripheral proxy transport"
+	depends on SPI
+	help
+	  Skeleton SPI transport module for nRF5340 peripheral proxy channels.
+
