@@ -91,12 +91,12 @@ endtask
 
 task push_rx_byte;
     input [7:0] b;
-    input l;
+    input last;
     begin
         @(posedge clk);
         while (!s_rx_ready) @(posedge clk);
         s_rx_data <= b;
-        s_rx_last <= l;
+        s_rx_last <= last;
         s_rx_valid <= 1'b1;
         @(posedge clk);
         s_rx_valid <= 1'b0;
@@ -106,12 +106,12 @@ endtask
 
 task push_tx_byte;
     input [7:0] b;
-    input l;
+    input last;
     begin
         @(posedge clk);
         while (!s_tx_ready) @(posedge clk);
         s_tx_data <= b;
-        s_tx_last <= l;
+        s_tx_last <= last;
         s_tx_valid <= 1'b1;
         @(posedge clk);
         s_tx_valid <= 1'b0;

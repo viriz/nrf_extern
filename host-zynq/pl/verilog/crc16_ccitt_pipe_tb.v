@@ -36,13 +36,13 @@ always #5 clk = ~clk;
 
 task send_byte;
     input [7:0] b;
-    input first;
-    input last;
+    input is_sof;
+    input is_eof;
     begin
         @(posedge clk);
         data_in <= b;
-        sof <= first;
-        eof <= last;
+        sof <= is_sof;
+        eof <= is_eof;
         valid <= 1'b1;
         @(posedge clk);
         valid <= 1'b0;
