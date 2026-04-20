@@ -9,9 +9,11 @@ target_include_directories(app PRIVATE
 
 target_sources(app PRIVATE
 	src/main.c
+	src/tl_crc.c
+	src/tl_frame.c
+	src/tl_batch.c
 	src/tl_codec.c
 	src/tl_transport.c
 	src/spis_link.c
 	src/svc_nfc.c
 )
-

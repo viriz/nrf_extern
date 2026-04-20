@@ -11,6 +11,7 @@ struct nrfp_dev {
 	struct spi_device *spi;
 	struct miscdevice chardev[NRFP_CHANNEL_COUNT];
 	struct mutex lock;
+	u8 crc_error_streak;
 };
 
 int nrfp_channels_init(struct nrfp_dev *ndev);

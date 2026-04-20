@@ -4,6 +4,21 @@
 
 #include "nrfp.h"
 
+static bool nrfp_crc_error_maybe_reset(struct nrfp_dev *ndev)
+{
+	ndev->crc_error_streak++;
+	if (ndev->crc_error_streak < 8u)
+		return false;
+	ndev->crc_error_streak = 0;
+	dev_warn(&ndev->spi->dev, "8 consecutive CRC errors, request nRF reset\n");
+	return true;
+}
+
+static void nrfp_crc_error_clear(struct nrfp_dev *ndev)
+{
+	ndev->crc_error_streak = 0;
+}
+
 static int nrfp_probe(struct spi_device *spi)
 {
 	struct nrfp_dev *ndev;
@@ -14,6 +29,7 @@ static int nrfp_probe(struct spi_device *spi)
 		return -ENOMEM;
 
 	ndev->spi = spi;
+	nrfp_crc_error_clear(ndev);
 	mutex_init(&ndev->lock);
 	spi_set_drvdata(spi, ndev);
 
@@ -31,6 +47,7 @@ static int nrfp_probe(struct spi_device *spi)
 		goto err_audio;
 
 	dev_info(&spi->dev, "nrfp proxy skeleton probed\n");
+	(void)nrfp_crc_error_maybe_reset;
 	return 0;
 
 err_audio:
@@ -71,4 +88,3 @@ module_spi_driver(nrfp_driver);
 MODULE_LICENSE("Apache-2.0");
 MODULE_AUTHOR("viriz");
 MODULE_DESCRIPTION("nRF5340 peripheral proxy kernel skeleton");
-
