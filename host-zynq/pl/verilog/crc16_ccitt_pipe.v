@@ -26,7 +26,7 @@ function [15:0] crc16_next;
     integer i;
     reg [15:0] c;
 begin
-    c = crc ^ {data, 8'h00};
+    c = crc ^ {data, 8'd0};
     for (i = 0; i < 8; i = i + 1) begin
         if (c[15])
             c = (c << 1) ^ 16'h1021;

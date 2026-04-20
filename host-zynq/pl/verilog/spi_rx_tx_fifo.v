@@ -142,7 +142,8 @@ always @(posedge clk or negedge rst_n) begin
             rx_mem[rx_wr_ptr] <= s_rx_data;
             rx_last_mem[rx_wr_ptr] <= s_rx_last;
             rx_wr_ptr <= rx_wr_ptr + {{(ADDR_WIDTH-1){1'b0}}, 1'b1};
-        end else if (s_rx_valid & ~s_rx_ready) begin
+        end
+        if (s_rx_valid & ~s_rx_ready) begin
             rx_overflow_cnt <= rx_overflow_cnt + 16'd1;
         end
 
@@ -160,7 +161,8 @@ always @(posedge clk or negedge rst_n) begin
             tx_mem[tx_wr_ptr] <= s_tx_data;
             tx_last_mem[tx_wr_ptr] <= s_tx_last;
             tx_wr_ptr <= tx_wr_ptr + {{(ADDR_WIDTH-1){1'b0}}, 1'b1};
-        end else if (s_tx_valid & ~s_tx_ready) begin
+        end
+        if (s_tx_valid & ~s_tx_ready) begin
             tx_overflow_cnt <= tx_overflow_cnt + 16'd1;
         end
 
