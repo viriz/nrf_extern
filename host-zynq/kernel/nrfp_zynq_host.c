@@ -170,7 +170,7 @@ return -ENOMEM;
 hdr.sof = NRFP_TL_SOF;
 hdr.version = NRFP_TL_VERSION;
 hdr.flags = (req->flags & ~NRFP_FLAG_CHANNEL_MASK) |
-    (req->channel & NRFP_FLAG_CHANNEL_MASK);
+		   (req->channel & NRFP_FLAG_CHANNEL_MASK);
 hdr.seq = ndev->next_seq++;
 hdr.ack_seq = 0;
 hdr.opcode = req->opcode;
@@ -383,7 +383,7 @@ return sizeof(evt);
 }
 
 static ssize_t nrfp_zynq_write(struct file *file, const char __user *buf,
-size_t len, loff_t *ppos)
+				size_t len, loff_t *ppos)
 {
 struct nrfp_zynq_dev *ndev = nrfp_zynq_from_file(file);
 struct nrfp_zynq_frame_req req;
@@ -484,12 +484,12 @@ mutex_init(&ndev->xfer_lock);
 spin_lock_init(&ndev->rx_lock);
 init_waitqueue_head(&ndev->rx_wq);
 ret = kfifo_alloc(&ndev->rx_fifo, NRFP_ZYNQ_EVENT_FIFO_DEPTH,
-  GFP_KERNEL);
+		   GFP_KERNEL);
 if (ret)
 return ret;
 
 ndev->host_irq_gpiod = devm_gpiod_get_optional(&spi->dev, "host-irq",
-GPIOD_IN);
+						GPIOD_IN);
 if (IS_ERR(ndev->host_irq_gpiod)) {
 ret = dev_err_probe(&spi->dev, PTR_ERR(ndev->host_irq_gpiod),
     "failed to get host-irq GPIO\n");
@@ -497,7 +497,7 @@ goto err_fifo;
 }
 
 ndev->reset_gpiod = devm_gpiod_get_optional(&spi->dev, "reset",
-     GPIOD_OUT_HIGH);
+					     GPIOD_OUT_HIGH);
 if (IS_ERR(ndev->reset_gpiod)) {
 ret = dev_err_probe(&spi->dev, PTR_ERR(ndev->reset_gpiod),
     "failed to get reset GPIO\n");
@@ -505,7 +505,7 @@ goto err_fifo;
 }
 
 ndev->boot_gpiod = devm_gpiod_get_optional(&spi->dev, "boot",
-   GPIOD_OUT_LOW);
+					    GPIOD_OUT_LOW);
 if (IS_ERR(ndev->boot_gpiod)) {
 ret = dev_err_probe(&spi->dev, PTR_ERR(ndev->boot_gpiod),
     "failed to get boot GPIO\n");
@@ -523,7 +523,7 @@ ndev->pl_rx_wm = NRFP_PL_DEFAULT_RX_WM;
 ndev->pl_tx_wm = NRFP_PL_DEFAULT_TX_WM;
 
 if (of_property_read_u32_array(spi->dev.of_node, "pl-fifo-crc-reg",
-       pl_reg, ARRAY_SIZE(pl_reg)) == 0) {
+				   pl_reg, ARRAY_SIZE(pl_reg)) == 0) {
 ndev->pl_base = ioremap(pl_reg[0], pl_reg[1]);
 if (!ndev->pl_base)
 dev_warn(&spi->dev,
@@ -544,11 +544,11 @@ goto err_iounmap;
 }
 
 ret = devm_request_threaded_irq(&spi->dev, ndev->host_irq,
-NULL,
-nrfp_zynq_host_irq_thread,
-IRQF_ONESHOT |
-IRQF_TRIGGER_RISING,
-"nrfp-zynq-host-irq", ndev);
+					NULL,
+					nrfp_zynq_host_irq_thread,
+					IRQF_ONESHOT |
+					IRQF_TRIGGER_RISING,
+					"nrfp-zynq-host-irq", ndev);
 if (ret)
 goto err_iounmap;
 }
